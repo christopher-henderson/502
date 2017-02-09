@@ -37,3 +37,22 @@ fact(N, F) :-
   N1 is N - 1,
   fact(N1, F1),
   F is N * F1.
+
+
+                    0 is our internal accumulator
+len(L, N) :- len(L, 0, N).
+len([], T, T).
+len([H|T], X, N) :- X1 is X + 1,
+                    len(T, X1, N).
+
+
+                    %member(X, [X|_]).
+                    %member(X, [_|T]) :- member(X, T).
+
+
+
+  is_prime(2).
+  is_prime(N) :- (N mod 2) =\= 0, \+ has_factor(3, N).
+
+  has_factor(X, N) :- (N mod X) =:= 0.
+  has_factor:- (N mod X) =\= 0, x * x < N, has_factor(X1, N)
