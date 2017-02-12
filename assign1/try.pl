@@ -14,18 +14,22 @@ edge(c, d, 1).
 edge(c, b, 4).
 edge(c, a, 6).
 
+% Wrap the outer call with our own list to keep track of visited nodes.
 findpath(X, Y, W, Path) :- findpath(X, Y, W, Path, [a,b,c,d,e,j]).
-
+% If there is a direct edge, then that is the answer. Base case.
 findpath(X, Y, W, Path, _) :- edge(X, Y, W), Path = [X, Y].
+% The recursive solution.
 findpath(X, Y, W, Path, NotVisited) :-
-                 write("Finding path from "), write(X), write(" to "), write(Y),
-                 edge(Z, Y, W1),
-                 X \= Z, X \= Y, member(X, NotVisited), member(Y, NotVisited), member(Z, NotVisited),
-                 select(Y, NotVisited, NV1),
-                 findpath(X, Z, W2, Path1, NV1),
-                 %select(Z, NV1, NV2),
-                 appendToTail(Path1, Y, Path),
-                 W is W1 + W2.
+                 X \= Y,                         % The source and the destination CANNOT be the same.
+                                                 %    If there is something like A --> A in the graph, then
+                                                 %    the above predicate will find it out.
+                 edge(Z, Y, W1),                 % Find some Z the definitely has an edge with Y.
+                 member(Z, NotVisited),          % Z Must not have been visited yet, lest that be a cycle.
+                 select(Y, NotVisited, NV1),     % Mark Y as having been visited. Do not mark Z yet as we
+                                                 %    have not found that path yet.
+                 findpath(X, Z, W2, Path1, NV1), % Find a path from X to Z.
+                 appendToTail(Path1, Y, Path),   % The final path is the path from X to Z plus Y.
+                 W is W1 + W2.                   % Calculate final weight.
 
 appendToTail(List, Element, Result) :- flatten([List, Element], Result).
 
@@ -43,16 +47,42 @@ appendToTail(List, Element, Result) :- flatten([List, Element], Result).
 
 
 
+/*
+
+
+W = 2,
+P = [a, b, e] ;
+W = 11,
+P = [a, c, d, b, e] ;
+W = 11,
+P = [a, c, b, e] ;
+W = 5,
+P = [a, b, d, e] ;
+W = 14,
+P = [a, c, b, d, e] ;
+W = 8,
+P = [a, c, d, e] ;
+W = 7,
+P = [a, b, c, d, e] ;
+
+W = 2,
+P = [a, b, e] ;
+W = 11,
+P = [a, c, d, b, e] ;
+W = 11,
+P = [a, c, b, e] ;
+W = 5,
+P = [a, b, d, e] ;
+W = 14,
+P = [a, c, b, d, e] ;
+W = 8,
+P = [a, c, d, e] ;
+W = 7,
+P = [a, b, c, d, e] ;
 
 
 
-
-
-
-
-
-
-
+*/
 
 
 /*
