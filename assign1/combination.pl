@@ -19,15 +19,18 @@ L = [a,b,e] ;
 File Name: ​combination.pl
 */
 
-% E.G. The only way to select 5 items from list of length 5 is the list itself.
-combination(X, List, L) :- length(List, Length),
-                           Length = X,
-                           L = List.
 
-% Kind of a design decision. If you want to choose 5 elements from a list that
-% has only four elements, then that is not possible and should be false.
-combination(X, List, L) :- length(List, Length),
-                          Length < X,
-                          fail.
+combination(1, List, L) :- member(H, List),
+                           L = [H].
+combination(X, List, L) :- member(H, List),
+                           splitList(H, List, List1),
+                           X1 is X - 1,
+                           combination(X1, List1, List2),
+                           appendHead(H, List2, L).
 
-combination(X, List, L) :- 
+
+splitList(H, [H|T], T).
+splitList(H, List, Result) :- select(_, List, List1), !,
+                              splitList(H, List1, Result).
+
+appendHead(H, T, [H|T]).
