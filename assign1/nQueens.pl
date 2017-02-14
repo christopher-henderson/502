@@ -17,3 +17,23 @@ Qs = [4, 2, 7, 3, 6, 8, 5, 1];
 Qs = [5, 2, 4, 7, 3, 8, 6, 1];
 Qs = [3, 5, 2, 8, 6, 4, 7, 1];
 */
+
+queens(N, Qs) :- queens(N, Qs, 0, []).
+queens(N, Qs, C, A) :- C = N,
+                       Qs = A.
+queens(N, Qs, C, A) :- Column is C + 1,
+                       generate(R, N),
+                       validate(R, Column, A),
+                       append(A, [[R, Column]], A1),
+                       queens(N, Qs, Column, A1).
+validate(Row, Column, Accum) :- maplist(valid(Row, Column), Accum).
+valid(Row, Column, [R, C]) :- Row \= R,
+                              Column \= C,
+                              Row + Column =\= R + C,
+                              Row - Column =\= R - C.
+
+generate(1, _).
+generate(X, N) :- generate(Y, N),
+                  X is Y + 1,
+                  write(X),nl,
+                  X =< N.
