@@ -45,20 +45,16 @@ edge(6, 3).
 edge(6, 1).
 edge(6, 4).
 
-color_map(L) :- color(1, [[1, null], [2, null], [3, null], [4, null], [5, null], [6, null]], [red, green, blue, yellow], L).
+color_map(L) :- color(1, [], [red, green, blue, yellow], L).
 
-color(Vertex, Map, Colors, L) :-  Vertex < 7,
-                               member(Color, Colors),
-                               maplist(validColor(Vertex, Color), Map),
-                               V2 is Vertex + 1,
-                               updateMap(Vertex, Color, Map, Map2),
-                               color(V2, Map2, Colors, L).
+color(Vertex, Map, Colors, L) :- Vertex < 7,
+                                 member(Color, Colors),
+                                 maplist(validColor(Vertex, Color), Map),
+                                 append(Map, [[Vertex, Color]], Map2),
+                                 V2 is Vertex + 1,
+                                 color(V2, Map2, Colors, L).
 
-color(_, Map, _, L) :-  L = Map.
+color(_, Map, _, L) :- length(Map, 6), L = Map.
 
-validColor(X, C1, [Y, C2]) :- \+ edge(X, Y);
-                             X \= Y,
-                             C1 \= C2.
-
-updateMap(Vertex, Color, Map, Map2) :- select([Vertex, null], Map, M),
-                                      append(M, [[Vertex, Color]], Map2).
+validColor(X, _, [Y, _]) :- \+ edge(X, Y).
+validColor(_, C1, [_, C2]) :- C1 \= C2.

@@ -20,6 +20,8 @@ Qs = [3, 5, 2, 8, 6, 4, 7, 1];
 
 queens(N, Qs) :- queens(N, Qs, 0, []).
 queens(N, Qs, C, A) :- C = N,
+                       % We have been accumulating [Row, Column] pairs this whole
+                       % time. So now we need to flatten it to just rows.
                        maplist(flatten, A, Qs).
 queens(N, Qs, C, A) :- Column is C + 1,
                        between(1, N, R),
