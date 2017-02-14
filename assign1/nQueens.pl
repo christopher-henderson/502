@@ -20,9 +20,9 @@ Qs = [3, 5, 2, 8, 6, 4, 7, 1];
 
 queens(N, Qs) :- queens(N, Qs, 0, []).
 queens(N, Qs, C, A) :- C = N,
-                       Qs = A.
+                       maplist(flatten, A, Qs).
 queens(N, Qs, C, A) :- Column is C + 1,
-                       generate(R, N),
+                       between(1, N, R),
                        validate(R, Column, A),
                        append(A, [[R, Column]], A1),
                        queens(N, Qs, Column, A1).
@@ -32,8 +32,4 @@ valid(Row, Column, [R, C]) :- Row \= R,
                               Row + Column =\= R + C,
                               Row - Column =\= R - C.
 
-generate(1, _).
-generate(X, N) :- generate(Y, N),
-                  X is Y + 1,
-                  write(X),nl,
-                  X =< N.
+flatten([X, _], X).
