@@ -45,16 +45,36 @@ edge(6, 3).
 edge(6, 1).
 edge(6, 4).
 
-color_map(L) :- color(1, [], [red, green, blue, yellow], L).
+vertex(1).
+vertex(2).
+vertex(3).
+vertex(4).
+vertex(5).
+vertex(6).
 
-color(Vertex, Map, Colors, L) :- Vertex < 7,
-                                 member(Color, Colors),
-                                 maplist(validColor(Vertex, Color), Map),
-                                 append(Map, [[Vertex, Color]], Map2),
-                                 V2 is Vertex + 1,
-                                 color(V2, Map2, Colors, L).
+color(red).
+color(green).
+color(blue).
+color(yellow).
 
-color(_, Map, _, L) :- length(Map, 6), L = Map.
+color_map(L) :- color([], L).
+
+color(Map, L) :- vertex(Vertex),                         % Give me a vertex.
+                 \+ member([Vertex, _], Map),            % It must not already be colored.
+                 color(Color),                           % Give me a color.
+                 maplist(validColor(Vertex, Color), Map),% No other vertex that has already been colored,
+                                                         %    and that has an edge with the target vertex, is allowed
+                                                         %    to have the same color.
+                 append(Map, [[Vertex, Color]], Map2),   % Update the accumulator.
+                 color(Map2, L).                         % Recurse.
+
+% The following counts the number of target vertices and makes
+% sure that we colored ALL of them.
+color(Map, L) :-  findall(_, vertex(_), TargetMap),
+                  length(TargetMap, NumberOfVertices),
+                  length(Map, NumberOfVerticesColored),
+                  NumberOfVertices = NumberOfVerticesColored,
+                  L = Map.
 
 validColor(X, _, [Y, _]) :- \+ edge(X, Y).
 validColor(_, C1, [_, C2]) :- C1 \= C2.
