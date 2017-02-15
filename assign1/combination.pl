@@ -28,7 +28,6 @@ combination(X, List, L) :- member(H, List),
                            combination(X1, List1, List2),
                            appendHead(H, List2, L).
 
-
 splitList(H, [H|T], T).
 splitList(H, List, Result) :- select(_, List, List1), !,
                               splitList(H, List1, Result).
