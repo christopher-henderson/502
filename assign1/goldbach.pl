@@ -13,22 +13,26 @@ L = [5,23]
 L = [17,13]
 */
 
+% Given a starting value, divide it by two. Those are our first candidates.
 goldbach(Value, Primes) :- V is Value div 2,
                             Candidates = [V, V],
                             goldbach(Value, Primes, Candidates).
+% The two candidates, A and B, sum to Value and are both prime.
+goldbach(Value, Primes, Candidates) :- sum_list(Candidates, Value),
+                                       all_prime(Candidates),
+                                       Primes = Candidates.
+% Take the previous candidates and add/subtract 1 from them. These are your
+% new candidates.
 goldbach(Value, Primes, Candidates) :- nth0(0, Candidates, A),
                                        nth0(1, Candidates, B),
-                                       sum_list(Candidates, Value),
-                                       is_prime(A),
-                                       is_prime(B),
-                                       Primes = Candidates.
-goldbach(Value, Primes, Candiates) :- nth0(0, Candiates, A),
                                        A1 is A - 1,
-                                       nth0(1, Candiates, B),
                                        B1 is B + 1,
                                        A1 > 1, B1 < Value,
                                        goldbach(Value, Primes, [A1, B1]).
 
+all_prime([]).
+all_prime([H|T]) :- is_prime(H),
+                    all_prime(T).
 % From class notes.
 is_prime(2).
 is_prime(3).
