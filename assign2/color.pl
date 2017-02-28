@@ -74,7 +74,7 @@ safe([V, C], [[V2, C2]|Others]) :- edge(V, V2),
                                    C #\= C2,
                                    safe([V, C], Others).
 
-% My own version of findall for finding colors.
+% My own version of findall for finding colors with using higher order predicates.
 colors(C) :- colors(C, []).
 colors(C, Acc) :- color(X),
                   \+ member(X, Acc),
@@ -83,7 +83,7 @@ colors(C, Acc) :- color(X),
                   colors(C, Acc1).
 colors(C, Acc) :- C = Acc.
 
-% My own version of findall for finding vertices.
+% My own version of findall for finding vertices with using higher order predicates.
 vertices(V) :- vertices(V, []).
 vertices(V, Acc) :- vertex(X),
                     \+ member(X, Acc),
