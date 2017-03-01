@@ -39,18 +39,29 @@ color(green).
 color(blue).
 color(yellow).
 
+color(1, red).
+color(2, green).
+color(3, blue).
+color(4, yellow).
+
 color_map(L) :-   vertices(Vertices),
                   colors(Colors),
                   length(Vertices, NumVertices),
                   length(Colors, NumColors),
-                  length(L, NumVertices),
-                  matrix(L, NumVertices, 2),
-                  transpose(L, T),
+                  length(M, NumVertices),
+                  matrix(M, NumVertices, 2),
+                  transpose(M, T),
                   restrictVertices(T, NumVertices),
                   restrictColors(T, NumColors),
-                  safe(L),
-                  flatten(L, L1),
-                  label(L1).
+                  safe(M),
+                  flatten(M, M1),
+                  label(M1),
+                  mapAnswer(M, L, []).
+
+mapAnswer([], L, Acc) :- L = Acc.
+mapAnswer([[V, C]|T], L, Acc) :- color(C, Color),
+                               append(Acc, [[V, Color]], Acc2),
+                               mapAnswer(T, L, Acc2).
 
 matrix([], 0, _).
 matrix([H|T], N, M) :-  length(H, M),

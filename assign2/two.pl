@@ -59,8 +59,12 @@ setGrids(Grid, N1) :- N2 #= N1 + 1,
                      setGrids(Grid, NextSubGrid).
 
 /*
-This is the most convenient way I could think of extracting the sub grids
-necessary for applying the all_distinct contraint to each 3x3 grid.
+Making a slice predicate was most convenient way I could think of extracting
+the sub grids necessary for applying the all_distinct contraint to each 3x3 grid.
+
+Example:
+?- slice([1,2,3,4,5], 1, 4, S).
+   S = [2, 3, 4]
 */
 slice(List, Beginning, End, Result) :- slice(List, Beginning, End, Result, []).
 slice(_, End, End, Result, Acc) :- Result = Acc.
@@ -81,3 +85,66 @@ problem(1, [[_,_,6, 5,9,_, _,_,_],
  [2,_,_, _,_,5, _,_,8],
  [_,3,8, _,_,1, _,_,_],
  [_,_,_, 3,_,_, 7,5,4]]).
+
+ /*
+ Zebra
+ */
+
+/*
+ There are five colored houses in a row (numbered 1 to 5), each with an owner, a pet,
+ cigarettes, and a drink.
+ 2. The English lives in the red house.
+ 3. The Spanish has a dog.
+ 4. They drink coffee in the green house.
+ 5. The Ukrainian drinks tea.
+ 6. The green house is next to the white house.
+ 7. The Winston smoker has a serpent.
+ 8. In the yellow house they smoke Kool.
+ 9. In the middle house they drink milk.
+ 10. The Norwegian lives in the first house from the left.
+ 11. The Chesterfield smoker lives near the man with the fox.
+ 12. In the house near the house with the horse they smoke Kool.
+ 13. The Lucky Strike smoker drinks juice.
+ 14. The Japanese smokes Kent.
+ 15. The Norwegian lives near the blue house.
+*/
+
+
+ solveZebra(Zebra, Water) :- Nationalities = [English, Spanish, Ukrainian, Norwegian, Japanese],
+                             Colors = [Red, Green, White, Yellow, Blue],
+                             Pets = [Dog, Serpent, Fox, Horse, Zebra],
+                             Cigarettes = [Winston, Kool, Chesterfield, LuckStrike, Kent],
+                             Drinks = [Coffee, Tea, Milk, Juice, Water],
+
+                             Nationalities ins 1..5,
+                             Colors ins 1..5,
+                             Pets ins 1..5,
+                             Cigarettes ins 1..5,
+                             Drinks ins 1..5,
+
+                             all_distinct(Nationalities),
+                             all_distinct(Colors),
+                             all_distinct(Pets),
+                             all_distinct(Cigarettes),
+                             all_distinct(Drinks),
+
+                             English #= Red,
+                             Spanish #= Dog,
+                             Green #= Coffee,
+                             Ukrainian #= Tea,
+                             (Green #= White + 1 ; Green #= White - 1),
+                             Winston #= Serpent,
+                             Yellow #= Kool,
+                             Milk #= 3,
+                             Norwegian #= 1,
+                             (Chesterfield #= Fox + 1 ; Chesterfield #= Fox - 1),
+                             (Horse #= Kool + 1 ; Horse #= Kool - 1),
+                             LuckStrike #= Juice,
+                             Japanese #= Kent,
+                             (Norwegian #= Blue + 1 ; Norwegian #= Blue - 1),
+
+                             label(Nationalities),
+                             label(Colors),
+                             label(Pets),
+                             label(Cigarettes),
+                             label(Drinks).
