@@ -1,5 +1,9 @@
 :- use_module(library(clpfd)).
 
+/*******************************************************************************
+Map Coloring
+*******************************************************************************/
+
 edge(1, 2).
 edge(1, 3).
 edge(1, 6).
@@ -44,25 +48,31 @@ color(2, green).
 color(3, blue).
 color(4, yellow).
 
-color_map(L) :-   vertices(Vertices),
-                  colors(Colors),
-                  length(Vertices, NumVertices),
-                  length(Colors, NumColors),
-                  length(M, NumVertices),
-                  matrix(M, NumVertices, 2),
-                  transpose(M, T),
-                  restrictVertices(T, NumVertices),
-                  restrictColors(T, NumColors),
-                  safe(M),
-                  flatten(M, M1),
-                  label(M1),
-                  mapAnswer(M, L, []).
+color_map(L) :- vertices(Vertices),
+                colors(Colors),
+                length(Vertices, NumVertices),
+                length(Colors, NumColors),
+                length(M, NumVertices),
+                matrix(M, NumVertices, 2),
+                transpose(M, T),
+                restrictVertices(T, NumVertices),
+                restrictColors(T, NumColors),
+                safe(M),
+                flatten(M, M1),
+                label(M1),
+                mapAnswer(M, L, []).
 
+/*
+Maps our integer representation of colors to our actual color atoms.
+*/
 mapAnswer([], L, Acc) :- L = Acc.
 mapAnswer([[V, C]|T], L, Acc) :- color(C, Color),
                                append(Acc, [[V, Color]], Acc2),
                                mapAnswer(T, L, Acc2).
 
+/*
+Defines an N x M matrix.
+*/
 matrix([], 0, _).
 matrix([H|T], N, M) :-  length(H, M),
                         N1 #= N - 1,
@@ -77,7 +87,6 @@ restrictColors([_, C], NumColors) :- C ins 1..NumColors.
 safe([]).
 safe([V|Others]) :- safe(V, Others),
                     safe(Others).
-
 safe([_, _], []).
 safe([V, C], [[V2, _]|Others]) :- \+ edge(V, V2),
                                     safe([V, C], Others).
@@ -85,7 +94,11 @@ safe([V, C], [[V2, C2]|Others]) :- edge(V, V2),
                                    C #\= C2,
                                    safe([V, C], Others).
 
-% My own version of findall for finding colors with using higher order predicates.
+/*
+My own version of findall for finding colors without using
+higher order predicates. I do this so that I can know how the
+number of colors in the graph without hard coding it.
+*/
 colors(C) :- colors(C, []).
 colors(C, Acc) :- color(X),
                   \+ member(X, Acc),
@@ -94,7 +107,11 @@ colors(C, Acc) :- color(X),
                   colors(C, Acc1).
 colors(C, Acc) :- C = Acc.
 
-% My own version of findall for finding vertices with using higher order predicates.
+/*
+My own version of findall for finding vertices without using
+higher order predicates. I do this so that I can know how the
+number of vertices in the graph without hard coding it.
+*/
 vertices(V) :- vertices(V, []).
 vertices(V, Acc) :- vertex(X),
                     \+ member(X, Acc),
